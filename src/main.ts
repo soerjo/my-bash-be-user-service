@@ -34,6 +34,7 @@ async function bootstrap() {
     },
     customCss: theme.getBuffer('flattop' as SwaggerThemeName),
     customSiteTitle: 'Boilerplate Documentation',
+    useGlobalPrefix: true,
   });
 
   await app.listen(configService.get('PORT'));
