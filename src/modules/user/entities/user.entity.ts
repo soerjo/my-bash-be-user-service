@@ -1,8 +1,8 @@
 import { Exclude } from 'class-transformer';
 import { MainEntityAbstract } from '../../../common/abstract/main-entity.abstract';
-import { Column, Entity } from 'typeorm';
-import { RoleEnum } from '../../../common/constant/role.constant';
+import { Column, Entity, JoinColumn, ManyToOne } from 'typeorm';
 import { decrypt, encrypt } from '../../../utils/encrypt.util';
+import { RoleEntity } from './role.entity';
 
 @Entity({ name: 'user', schema: 'user' })
 export class UserEntity extends MainEntityAbstract {
@@ -28,8 +28,11 @@ export class UserEntity extends MainEntityAbstract {
   })
   phone?: string;
 
-  @Column({ nullable: false, enum: RoleEnum })
-  role_id: RoleEnum;
+  @Column({ nullable: false })
+  role_id: number;
+
+  @Column({ nullable: false, default: 0 })
+  bank_id: number;
 
   @Exclude()
   @Column({ nullable: true })
@@ -38,4 +41,8 @@ export class UserEntity extends MainEntityAbstract {
   @Exclude()
   @Column({ nullable: true })
   temp_password?: string;
+
+  @ManyToOne(() => RoleEntity)
+  @JoinColumn({ name: 'role_id', referencedColumnName: 'role_id' })
+  role: RoleEntity
 }

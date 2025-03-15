@@ -15,6 +15,8 @@ interface IAppConfig {
   DATABASE_URL: string;
   PRIVATE_KEY: string;
   PUBLIC_KEY: string;
+  EMAIL_FROM: string;
+  EMAIL_PASSWORD: string;
 }
 
 const configService = new ConfigService();
@@ -30,6 +32,8 @@ const configs: IAppConfig = {
   DATABASE_URL: configService.get(`DATABASE_URL`),
   PRIVATE_KEY: configService.get(`PRIVATE_KEY`),
   PUBLIC_KEY: configService.get(`PUBLIC_KEY`),
+  EMAIL_FROM: configService.get(`EMAIL_FROM`),
+  EMAIL_PASSWORD: configService.get(`EMAIL_PASSWORD`),
 };
 
 const schema = Joi.object<IAppConfig>({
@@ -44,6 +48,8 @@ const schema = Joi.object<IAppConfig>({
   DATABASE_URL: Joi.string().required(),
   PRIVATE_KEY: Joi.string().required(),
   PUBLIC_KEY: Joi.string().required(),
+  EMAIL_FROM: Joi.string().required(),
+  EMAIL_PASSWORD: Joi.string().required(),
 });
 
 export default registerAs('app_configs', () => {
