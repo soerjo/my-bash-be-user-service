@@ -1,8 +1,8 @@
 import { Exclude } from 'class-transformer';
 import { MainEntityAbstract } from '../../../common/abstract/main-entity.abstract';
 import { Column, Entity } from 'typeorm';
-import { RoleEnum } from 'src/common/constant/role.constant';
-import { decrypt, encrypt } from 'src/utils/encrypt.util';
+import { RoleEnum } from '../../../common/constant/role.constant';
+import { decrypt, encrypt } from '../../../utils/encrypt.util';
 
 @Entity({ name: 'user', schema: 'user' })
 export class UserEntity extends MainEntityAbstract {
