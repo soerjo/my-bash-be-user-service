@@ -6,7 +6,7 @@ import { ConfigService } from '@nestjs/config';
 import { ValidationPipe } from '@nestjs/common';
 import { AdvancedFilterPlugin } from './utils/swagger-plugin.util';
 import { initializeTransactionalContext } from 'typeorm-transactional';
-import * as morgan from 'morgan';
+// import * as morgan from 'morgan';
 
 async function bootstrap() {
   initializeTransactionalContext();
@@ -22,7 +22,7 @@ async function bootstrap() {
 
   app.useGlobalPipes(new ValidationPipe({ whitelist: true, transform: true }));
   app.enableCors({ credentials: true });
-  app.use(morgan('short'));
+  // app.use(morgan('short'));
 
   const theme = new SwaggerTheme();
   const document = SwaggerModule.createDocument(app, config);
