@@ -1,18 +1,22 @@
-import { ClassSerializerInterceptor, Module } from '@nestjs/common';
+import { Module } from '@nestjs/common';
 import { AuthService } from './services/auth.service';
 import { AuthController } from './controller/auth.controller';
 import { JwtModule } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import { JwtAuthGuard } from '../../common/guard/jwt-auth.guard';
+import { UserModule } from '../user/user.module';
 
 @Module({
   imports: [
+    UserModule,
     JwtModule.registerAsync({
       useFactory: (config: ConfigService) => {
         return {
-          secret: config.get<string>('JWT_SECRET_KEY'),
-          signOptions: {
-            expiresIn: config.get<string | number>('JWT_EXPIRATION_TIME'),
+          privateKey: config.get<string>('PRIVATE_KEY'),
+          publicKey: config.get<string>('PUBLIC_KEY'),
+          signOptions: { 
+            algorithm: 'RS256', 
+            expiresIn: '8h',
           },
         };
       },

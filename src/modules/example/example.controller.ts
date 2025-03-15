@@ -1,4 +1,4 @@
-import { Controller, Get, Param } from '@nestjs/common';
+import { Controller, Get } from '@nestjs/common';
 import { ExampleService } from './example.service';
 
 @Controller('/')
@@ -8,10 +8,5 @@ export class ExampleController {
   @Get()
   findAll() {
     return this.exampleService.findAll();
-  }
-
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.exampleService.findOne(+id);
   }
 }

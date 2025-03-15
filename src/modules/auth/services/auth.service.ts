@@ -26,8 +26,6 @@ export class AuthService {
   }
 
   decodeJwt(jwt: string) {
-    return this.jwtService.verify(jwt, {
-      secret: this.configService.get('JWT_SECRET_KEY'),
-    });
+    return this.jwtService.verify(jwt);
   }
 }

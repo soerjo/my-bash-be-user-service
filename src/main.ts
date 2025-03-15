@@ -1,12 +1,12 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './main.module';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
-import { SwaggerTheme, SwaggerThemeName } from 'swagger-themes';
+import { SwaggerTheme } from 'swagger-themes';
 import { ConfigService } from '@nestjs/config';
 import { ValidationPipe } from '@nestjs/common';
 import { AdvancedFilterPlugin } from './utils/swagger-plugin.util';
 import { initializeTransactionalContext } from 'typeorm-transactional';
-// import * as morgan from 'morgan';
+import * as morgan from 'morgan';
 
 async function bootstrap() {
   initializeTransactionalContext();
@@ -22,7 +22,7 @@ async function bootstrap() {
 
   app.useGlobalPipes(new ValidationPipe({ whitelist: true, transform: true }));
   app.enableCors({ credentials: true });
-  // app.use(morgan('tiny'));
+  app.use(morgan('short'));
 
   const theme = new SwaggerTheme();
   const document = SwaggerModule.createDocument(app, config);
@@ -35,7 +35,6 @@ async function bootstrap() {
     // customCss: theme.getBuffer('flattop' as SwaggerThemeName),
     customSiteTitle: 'Boilerplate Documentation',
     useGlobalPrefix: true,    
-    customfavIcon: "https://avatars.githubusercontent.com/u/6936373?s=200&v=4",
     customJs: [
       "https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/4.15.5/swagger-ui-bundle.min.js",
       "https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/4.15.5/swagger-ui-standalone-preset.min.js",
