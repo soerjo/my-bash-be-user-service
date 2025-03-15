@@ -7,15 +7,14 @@ interface IAppConfig {
   NODE_ENV: string;
   PORT: number;
   TZ: string;
-  JWT_SECRET_KEY: string;
-  JWT_EXPIRATION_TIME: string;
-  TEMP_PASSWORD: string;
-  DATABASE_HOST: string;
-  DATABASE_PORT: number;
-  DATABASE_USERNAME: string;
-  DATABASE_PASSWORD: string;
-  DATABASE_NAME: string;
+  ENCRYPT_KEY: string;
+  ROOT_ADMIN_NAME: string;
+  ROOT_ADMIN_USERNAME: string;
+  ROOT_ADMIN_EMAIL: string;
+  ROOT_ADMIN_PASSWORD: string;
   DATABASE_URL: string;
+  PRIVATE_KEY: string;
+  PUBLIC_KEY: string;
 }
 
 const configService = new ConfigService();
@@ -23,30 +22,28 @@ const configs: IAppConfig = {
   NODE_ENV: configService.get(`NODE_ENV`),
   PORT: configService.get(`PORT`),
   TZ: configService.get(`TZ`),
-  TEMP_PASSWORD: configService.get(`TEMP_PASSWORD`),
-  JWT_SECRET_KEY: configService.get(`JWT_SECRET_KEY`),
-  JWT_EXPIRATION_TIME: configService.get(`JWT_EXPIRATION_TIME`),
-  DATABASE_HOST: configService.get(`DATABASE_HOST`),
-  DATABASE_PORT: configService.get(`DATABASE_PORT`),
-  DATABASE_USERNAME: configService.get(`DATABASE_USERNAME`),
-  DATABASE_PASSWORD: configService.get(`DATABASE_PASSWORD`),
-  DATABASE_NAME: configService.get(`DATABASE_NAME`),
+  ENCRYPT_KEY: configService.get(`ENCRYPT_KEY`),
+  ROOT_ADMIN_NAME: configService.get(`ROOT_ADMIN_NAME`),
+  ROOT_ADMIN_USERNAME: configService.get(`ROOT_ADMIN_USERNAME`),
+  ROOT_ADMIN_EMAIL: configService.get(`ROOT_ADMIN_EMAIL`),
+  ROOT_ADMIN_PASSWORD: configService.get(`ROOT_ADMIN_PASSWORD`),
   DATABASE_URL: configService.get(`DATABASE_URL`),
+  PRIVATE_KEY: configService.get(`PRIVATE_KEY`),
+  PUBLIC_KEY: configService.get(`PUBLIC_KEY`),
 };
 
 const schema = Joi.object<IAppConfig>({
   NODE_ENV: Joi.string().valid('development', 'production', 'test', 'local').required(),
   PORT: Joi.number().optional(),
   TZ: Joi.string().optional(),
-  TEMP_PASSWORD: Joi.string().required(),
-  JWT_SECRET_KEY: Joi.string().required(),
-  JWT_EXPIRATION_TIME: Joi.string().required(),
-  DATABASE_HOST: Joi.string().optional(),
-  DATABASE_PORT: Joi.number().optional(),
-  DATABASE_USERNAME: Joi.string().optional(),
-  DATABASE_PASSWORD: Joi.string().optional(),
-  DATABASE_NAME: Joi.string().optional(),
-  DATABASE_URL:Joi.string().optional(),
+  ENCRYPT_KEY: Joi.string().required(),
+  ROOT_ADMIN_NAME: Joi.string().required(),
+  ROOT_ADMIN_USERNAME: Joi.string().required(),
+  ROOT_ADMIN_EMAIL: Joi.string().email().required(),
+  ROOT_ADMIN_PASSWORD: Joi.string().required(),
+  DATABASE_URL: Joi.string().required(),
+  PRIVATE_KEY: Joi.string().required(),
+  PUBLIC_KEY: Joi.string().required(),
 });
 
 export default registerAs('app_configs', () => {
