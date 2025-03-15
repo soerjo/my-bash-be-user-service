@@ -2,10 +2,10 @@ import { Injectable, OnModuleInit } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { ConfigService } from '@nestjs/config';
-import { encryptPassword } from 'src/utils/hashing.util';
+import { encryptPassword } from '../../utils/hashing.util';
 import { UserRepository } from './user.repository';
 import { FindUserDto } from './dto/find-user.dto';
-import { RoleEnum } from 'src/common/constant/role.constant';
+import { RoleEnum } from '../../common/constant/role.constant';
 
 @Injectable()
 export class UserService implements OnModuleInit  {

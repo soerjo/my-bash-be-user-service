@@ -3,7 +3,7 @@ import { AuthService } from '../services/auth.service';
 import { CreateAuthDto } from '../dto/create-auth.dto';
 import { ApiTags } from '@nestjs/swagger';
 import { validatePassword } from '../../../utils/hashing.util';
-import { UserService } from 'src/modules/user/user.service';
+import { UserService } from '../../../modules/user/user.service';
 
 @ApiTags('Auth')
 @Controller('auth')
