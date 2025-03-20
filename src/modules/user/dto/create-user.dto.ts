@@ -6,5 +6,9 @@ export class CreateUserDto {
     email: string;
     phone?: string;
     role_id: RoleEnum;
-    password: string;
+    password?: string;
+    is_email_verified?: boolean;
+    created_by?: number;
+    bank_id?: number;
+    temp_password?: string;
 }

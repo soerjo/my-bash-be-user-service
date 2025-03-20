@@ -3,6 +3,7 @@ import { MainEntityAbstract } from '../../../common/abstract/main-entity.abstrac
 import { Column, Entity, JoinColumn, ManyToOne } from 'typeorm';
 import { decrypt, encrypt } from '../../../utils/encrypt.util';
 import { RoleEntity } from './role.entity';
+// import { BankEntity } from '../../../modules/bank/entities/bank.entity';
 
 @Entity({ name: 'user', schema: 'user' })
 export class UserEntity extends MainEntityAbstract {
@@ -17,6 +18,9 @@ export class UserEntity extends MainEntityAbstract {
 
   @Column({ nullable: false })
   email: string;
+
+  @Column({ nullable: false, default: false })
+  is_email_verified : boolean;
 
   @Column({
     nullable: true,
@@ -45,4 +49,9 @@ export class UserEntity extends MainEntityAbstract {
   @ManyToOne(() => RoleEntity)
   @JoinColumn({ name: 'role_id', referencedColumnName: 'role_id' })
   role: RoleEntity
+
+  // @ManyToOne(() => BankEntity)
+  // @JoinColumn({ name: 'bank_id', referencedColumnName: 'id' })
+  // bank: BankEntity
+
 }

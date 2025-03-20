@@ -2,7 +2,7 @@ import * as dotenv from 'dotenv';
 import { createTransport } from 'nodemailer';
 dotenv.config();
 
-const sendVerificationEmail = async (userEmail: string, token: string) => {
+export const sendVerificationEmail = async (userEmail: string, token: string) => {
   const verificationUrl = `${process.env.FRONTENT_URL}/api/auth/verify-email?token=${token}`;
 
   const message = `
@@ -29,4 +29,29 @@ const sendVerificationEmail = async (userEmail: string, token: string) => {
   console.log('Email sent!');
 };
 
-export default sendVerificationEmail;
+export const sendResetPasswordEmail = async (userEmail: string, token: string) => {
+  const verificationUrl = `${process.env.FRONTENT_URL}/api/auth/verify-email?token=${token}`;
+
+  const message = `
+    <h1>Bank Sampah Email request rest Password</h1>
+    <p>Click the link below to reset your password account:</p>
+    <a href="${verificationUrl}">reset Password</a>
+  `;
+
+  const transporter = createTransport({
+    service: 'Gmail',
+    auth: {
+      user: process.env.EMAIL_FROM,
+      pass: process.env.EMAIL_PASSWORD,
+    },
+  });
+
+  await transporter.sendMail({
+    from: process.env.EMAIL_FROM,
+    to: userEmail,
+    subject: 'Bash App Email Verification',
+    html: message,
+  });
+
+  console.log('Email sent!');
+};

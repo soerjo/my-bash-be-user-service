@@ -4,6 +4,8 @@ import { CreateAuthDto } from '../dto/create-auth.dto';
 import { ApiTags } from '@nestjs/swagger';
 import { ChangePasswordTokenDto } from '../dto/change-password.dto';
 import { reqForgotPassDto } from '../dto/request-forgot-password.dto';
+import { RegisterUserDto } from '../dto/register-user.dto';
+import { VerifiedEmailDto } from '../dto/verified-email.dto';
 
 @ApiTags('Auth')
 @Controller('auth')
@@ -30,8 +32,21 @@ export class AuthController {
     return this.authService.changePasswordByEmail(dto);
   }
 
-  @Post('register')
+  @Post('verified-email') // get link from email
   @HttpCode(200)
-  async register(@Body() createAuthDto: CreateAuthDto) {}
+  async verfiedEmail(@Body() dto: VerifiedEmailDto) {
+    return this.authService.verifiedEmail(dto);
+  }
 
+  @Post('register-bank')
+  @HttpCode(200)
+  async registerBank(@Body() createAuthDto: RegisterUserDto) {
+    return this.authService.registerBank(createAuthDto);
+  }
+
+  @Post('register-user')
+  @HttpCode(200)
+  async registerUser(@Body() createAuthDto: RegisterUserDto) {
+    return this.authService.registerUser(createAuthDto);
+  }
 }

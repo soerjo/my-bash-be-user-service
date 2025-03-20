@@ -14,19 +14,20 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   const configService = app.get(ConfigService);
   const config = new DocumentBuilder()
-    .setTitle('API Documentation')
-    .setDescription('The API description')
-    .setVersion('1.0')
-    .addBearerAuth()
-    .build();
-
+  .setTitle('API Documentation')
+  .setDescription('The API description')
+  .setVersion('1.0')
+  .addBearerAuth()
+  .build();
+  
+  app.setGlobalPrefix('api');
   app.useGlobalPipes(new ValidationPipe({ whitelist: true, transform: true }));
   app.enableCors({ credentials: true });
   // app.use(morgan('short'));
 
   const theme = new SwaggerTheme();
   const document = SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup(':v/docs', app, document, {
+  SwaggerModule.setup('/docs', app, document, {
     swaggerOptions: {
       filter: true, // Enable the search bar
       showRequestDuration: true, // Show the duration of each request

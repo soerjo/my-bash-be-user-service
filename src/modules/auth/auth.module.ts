@@ -5,9 +5,11 @@ import { JwtModule } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import { JwtAuthGuard } from '../../common/guard/jwt-auth.guard';
 import { UserModule } from '../user/user.module';
+import { BankModule } from '../bank/bank.module';
 
 @Module({
   imports: [
+    BankModule,
     UserModule,
     JwtModule.registerAsync({
       useFactory: (config: ConfigService) => {

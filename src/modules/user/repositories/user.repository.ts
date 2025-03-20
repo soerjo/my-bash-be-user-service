@@ -1,28 +1,32 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { CreateUserDto } from '../dto/create-user.dto';
 import { UpdateUserDto } from '../dto/update-user.dto';
-import { InjectRepository } from '@nestjs/typeorm';
 import { UserEntity } from '../entities/user.entity';
-import { Repository } from 'typeorm';
+import { DataSource, EntityManager, Repository } from 'typeorm';
 import { FindUserDto } from '../dto/find-user.dto';
 import { IJwtPayload } from '../../../common/interface/jwt-payload.interface';
 import { RoleEnum } from '../../../common/constant/role.constant';
 
 @Injectable()
-export class UserRepository  {
-
-  constructor(
-    @InjectRepository(UserEntity)
-    private usersRepository: Repository<UserEntity>,
-  ) {}
-
-  createUser(dto: CreateUserDto) {
-    const user = this.usersRepository.create(dto)
-    return this.usersRepository.save(user)
+export class UserRepository extends Repository<UserEntity> {
+  constructor(private readonly dataSource: DataSource) {
+    super(UserEntity, dataSource.createEntityManager());
   }
 
-  findOneByUsernameOrEmail(usernameOrEmail: string) {
-    return this.usersRepository.findOne({
+  // constructor(
+  //   @InjectRepository(UserEntity)
+  //   private usersRepository: Repository<UserEntity>,
+  // ) {}
+
+  createUser(dto: CreateUserDto, manager?: EntityManager) {
+    const repo = manager ? manager.getRepository(UserEntity) : this;
+    const user = repo.create(dto)
+    return repo.save(user)
+  }
+
+  findOneByUsernameOrEmail(usernameOrEmail: string, manager?: EntityManager) {
+    const repo = manager ? manager.getRepository(UserEntity) : this;
+    return repo.findOne({
       where: [
         { username: usernameOrEmail },
         { email: usernameOrEmail }
@@ -30,8 +34,9 @@ export class UserRepository  {
     })
   }
 
-  async findAll(dto: FindUserDto, userPayload: IJwtPayload) {
-    const queryBuilder = this.usersRepository.createQueryBuilder('user');
+  async findAll(dto: FindUserDto, userPayload: IJwtPayload, manager?: EntityManager) {
+    const repo = manager ? manager.getRepository(UserEntity) : this;
+    const queryBuilder = repo.createQueryBuilder('user');
     queryBuilder.andWhere('user.role_id > :userRoleId', { userRoleId: userPayload.role_id });
     queryBuilder.leftJoinAndSelect('user.role', 'role');
     queryBuilder.select([
@@ -81,32 +86,34 @@ export class UserRepository  {
     return { data, meta}
   }
 
-  findOneById(id: number) {
-    return this.usersRepository.findOne({ where: { id } })
+  findOneById(id: number, manager?: EntityManager) {
+    const repo = manager ? manager.getRepository(UserEntity) : this;
+    return repo.findOne({ where: { id } })
   }
 
-  findOneByUsername(username: string) {
-    return this.usersRepository.findOne({ where: { username } })
+  findOneByUsername(username: string, manager?: EntityManager) {
+    const repo = manager ? manager.getRepository(UserEntity) : this;
+    return repo.findOne({ where: { username } })
   }
 
-  async update(id: number, dto: UpdateUserDto) {
-    const existUser = await this.findOneById(id)
+  async updateUser(id: number, dto: UpdateUserDto, manager?: EntityManager) {
+    const repo = manager ? manager.getRepository(UserEntity) : this;
+    const existUser = await this.findOneById(id, manager)
     if(!existUser) throw new BadRequestException('User not found');
 
-    const updateUserData = this.usersRepository.create({
+    const updateUserData = repo.create({
         ...existUser,
         ...dto
     })
 
-    console.dir({updateUserData}, {depth: null})
-
-    return this.usersRepository.save(updateUserData)
+    return repo.save(updateUserData)
   }
 
-  remove(id: number) {
-    const existUser = this.findOneById(id)
+  removeUser(id: number, manager?: EntityManager) {
+    const repo = manager ? manager.getRepository(UserEntity) : this;
+    const existUser = this.findOneById(id, manager)
     if(!existUser) throw new BadRequestException('User not found');
 
-    return this.usersRepository.softDelete(id)
+    return repo.softDelete(id)
   }
 }
