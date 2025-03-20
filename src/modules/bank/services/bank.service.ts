@@ -2,8 +2,8 @@ import { BadRequestException, Injectable } from '@nestjs/common';
 import { CreateBankDto } from '../dto/create-bank.dto';
 import { UpdateBankDto } from '../dto/update-bank.dto';
 import { BankRepository } from '../repositories/bank.repository';
-import { PaginationDto } from 'src/common/dto/pagination.dto';
-import { IJwtPayload } from 'src/common/interface/jwt-payload.interface';
+import { PaginationDto } from '../../../common/dto/pagination.dto';
+import { IJwtPayload } from '../../../common/interface/jwt-payload.interface';
 import { EntityManager } from 'typeorm';
 
 @Injectable()

@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Query, UseGuards, BadRequestException } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Query, UseGuards, BadRequestException } from '@nestjs/common';
 import { UserService } from '../services/user.service';
 import { CreateUserDto } from '../dto/create-user.dto';
 import { UpdateUserDto } from '../dto/update-user.dto';
@@ -13,8 +13,7 @@ import { CurrentUser } from '../../../common/decorator/jwt-payload.decorator';
 import { IJwtPayload } from '../../../common/interface/jwt-payload.interface';
 import { ChangePasswordDto } from '../dto/change-password.dto';
 import { CreateUserBankDto } from '../dto/create-user-bank.dto';
-import { ValidateUserNameDto } from '../dto/validate-user-name.dto';
-import { JwtOpenAuthGuard } from 'src/common/guard/jwt-open-auth.guard';
+import { JwtOpenAuthGuard } from '../../../common/guard/jwt-open-auth.guard';
 
 
 @ApiTags('User')

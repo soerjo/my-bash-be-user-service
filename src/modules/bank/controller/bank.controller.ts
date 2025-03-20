@@ -9,8 +9,7 @@ import { CurrentUser } from '../../../common/decorator/jwt-payload.decorator';
 import { RoleEnum } from '../../../common/constant/role.constant';
 import { FindBulkDto } from '../dto/find-bulk.dto';
 import { FindBankDto } from '../dto/find-bank.dto';
-import { RolesGuard } from 'src/common/guard/role.guard';
-import { Roles } from 'src/common/decorator/role.decorator';
+import { Roles } from '../../../common/decorator/role.decorator';
 
 @ApiTags('Bank')
 @Controller('bank')

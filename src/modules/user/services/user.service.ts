@@ -12,8 +12,8 @@ import { instanceToPlain } from 'class-transformer';
 import { DataSource, EntityManager } from 'typeorm';
 import { UserEntity } from '../entities/user.entity';
 import { CreateUserBankDto } from '../dto/create-user-bank.dto';
-import { BankService } from 'src/modules/bank/services/bank.service';
-import { sendVerificationEmail } from 'src/utils/email.util';
+import { BankService } from '../../../modules/bank/services/bank.service';
+import { sendVerificationEmail } from '../../../utils/email.util';
 
 @Injectable()
 export class UserService implements OnModuleInit  {

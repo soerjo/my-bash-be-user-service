@@ -13,7 +13,7 @@ import { AUTH_EMAIL_REQUEST } from '../../../common/constant/auth-email-request.
 import { VerifiedEmailDto } from '../dto/verified-email.dto';
 import { DataSource } from 'typeorm';
 import { instanceToPlain } from 'class-transformer';
-import { BankService } from 'src/modules/bank/services/bank.service';
+import { BankService } from '../../../modules/bank/services/bank.service';
 
 @Injectable()
 export class AuthService {
