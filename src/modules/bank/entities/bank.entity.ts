@@ -43,7 +43,13 @@ export class BankEntity extends MainEntityAbstract {
   })
   village: string;
 
-  @Column({ type: 'text' })
+  @Column({
+    type: 'text',
+    transformer: {
+      to: (value: string) => encrypt(value), // Encrypt before saving
+      from: (value: string) => decrypt(value), // Decrypt when retrieving
+    },
+  })
   address: string;
 
   @Column({

@@ -139,6 +139,7 @@ export class AuthService {
         username: dto.username,
         name: dto.username,
         password: dto.password,
+        phone: dto.phone,
         role_id: RoleEnum.USER_CUSTOMER,
       }, manager);
 

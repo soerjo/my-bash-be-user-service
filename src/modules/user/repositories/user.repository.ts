@@ -6,6 +6,7 @@ import { DataSource, EntityManager, Repository } from 'typeorm';
 import { FindUserDto } from '../dto/find-user.dto';
 import { IJwtPayload } from '../../../common/interface/jwt-payload.interface';
 import { RoleEnum } from '../../../common/constant/role.constant';
+import { decrypt } from 'src/utils/encrypt.util';
 
 @Injectable()
 export class UserRepository extends Repository<UserEntity> {
@@ -74,7 +75,7 @@ export class UserRepository extends Repository<UserEntity> {
   
     const queryItemCount = queryBuilder.getCount()
     const queryUser = queryBuilder.getRawMany()
-    const [itemCount, data] = await Promise.all([queryItemCount, queryUser])
+    const [itemCount, rawData] = await Promise.all([queryItemCount, queryUser])
 
     const meta = {
       page: dto?.page,
@@ -83,7 +84,12 @@ export class UserRepository extends Repository<UserEntity> {
       pageCount: Math.ceil(itemCount / dto?.take) ? Math.ceil(itemCount / dto?.take) : 0,
     };
 
-    return { data, meta}
+    const processedData = rawData.map(data => ({
+      ...data, 
+      phone: data.phone ? decrypt(data.phone) : '-',
+    }))
+    
+    return { data: processedData, meta}
   }
 
   findOneById(id: number, manager?: EntityManager) {
