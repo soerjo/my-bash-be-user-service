@@ -1,9 +1,8 @@
 import { Exclude } from 'class-transformer';
 import { MainEntityAbstract } from '../../../common/abstract/main-entity.abstract';
 import { Column, Entity, JoinColumn, ManyToOne } from 'typeorm';
-import { decrypt, encrypt } from '../../../utils/encrypt.util';
+import { decrypt, encrypt, staticDecrypt, staticEncrypt } from '../../../utils/encrypt.util';
 import { RoleEntity } from './role.entity';
-// import { BankEntity } from '../../../modules/bank/entities/bank.entity';
 
 @Entity({ name: 'user', schema: 'user' })
 export class UserEntity extends MainEntityAbstract {
@@ -16,7 +15,13 @@ export class UserEntity extends MainEntityAbstract {
    })
   username: string;
 
-  @Column({ nullable: false })
+  @Column({ 
+    nullable: false,
+    transformer: {
+      to: (value: string) => staticEncrypt(value), // Encrypt before saving
+      from: (value: string) => staticDecrypt(value), // Decrypt when retrieving
+    }
+   })
   email: string;
 
   @Column({ nullable: false, default: false })

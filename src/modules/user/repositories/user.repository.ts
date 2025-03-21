@@ -6,7 +6,7 @@ import { DataSource, EntityManager, Repository } from 'typeorm';
 import { FindUserDto } from '../dto/find-user.dto';
 import { IJwtPayload } from '../../../common/interface/jwt-payload.interface';
 import { RoleEnum } from '../../../common/constant/role.constant';
-import { decrypt } from 'src/utils/encrypt.util';
+import { decrypt, staticEncrypt } from 'src/utils/encrypt.util';
 
 @Injectable()
 export class UserRepository extends Repository<UserEntity> {

@@ -17,6 +17,7 @@ interface IAppConfig {
   PUBLIC_KEY: string;
   EMAIL_FROM: string;
   EMAIL_PASSWORD: string;
+  STATIC_KEY: string;
 }
 
 const configService = new ConfigService();
@@ -34,6 +35,7 @@ const configs: IAppConfig = {
   PUBLIC_KEY: configService.get(`PUBLIC_KEY`),
   EMAIL_FROM: configService.get(`EMAIL_FROM`),
   EMAIL_PASSWORD: configService.get(`EMAIL_PASSWORD`),
+  STATIC_KEY: configService.get(`STATIC_KEY`),
 };
 
 const schema = Joi.object<IAppConfig>({
@@ -50,6 +52,7 @@ const schema = Joi.object<IAppConfig>({
   PUBLIC_KEY: Joi.string().required(),
   EMAIL_FROM: Joi.string().required(),
   EMAIL_PASSWORD: Joi.string().required(),
+  STATIC_KEY: Joi.string().required(),
 });
 
 export default registerAs('app_configs', () => {
