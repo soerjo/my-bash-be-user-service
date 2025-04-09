@@ -25,8 +25,8 @@ export class UserController {
   @Roles([    
     RoleEnum.SYSTEM_ADMIN, 
     RoleEnum.SUPER_ADMIN, 
-    RoleEnum.USER_ADMIN_BANK, 
     RoleEnum.USER_SUPER_ADMIN_BANK,
+    RoleEnum.USER_ADMIN_BANK, 
   ])
   @UseGuards(JwtAuthGuard, RolesGuard)
   @ApiBearerAuth()
@@ -38,8 +38,8 @@ export class UserController {
   @Roles([
     RoleEnum.SYSTEM_ADMIN, 
     RoleEnum.SUPER_ADMIN, 
-    RoleEnum.USER_ADMIN_BANK, 
     RoleEnum.USER_SUPER_ADMIN_BANK,
+    RoleEnum.USER_ADMIN_BANK, 
   ])
   @UseGuards(JwtAuthGuard, RolesGuard)
   @ApiBearerAuth()
@@ -47,13 +47,7 @@ export class UserController {
     return this.userService.resetPassword(dto, userPayload);
   }
 
-  @Post('/change-password')
-  @UseGuards(JwtAuthGuard, RolesGuard)
-  @ApiBearerAuth()
-  changePassword(@CurrentUser() userPayload: IJwtPayload, @Body() dto: ChangePasswordDto) {
-    if(!userPayload.is_temp_password) throw new BadRequestException('You are not allowed to change password');
-    return this.userService.changePassword(userPayload, dto);
-  }
+
 
 
   @Get()
@@ -78,6 +72,21 @@ export class UserController {
     return { message: 'email or username is available' };
   }
 
+  @Post('/change-password')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @ApiBearerAuth()
+  changePassword(@CurrentUser() userPayload: IJwtPayload, @Body() dto: ChangePasswordDto) {
+    if(!userPayload.is_temp_password) throw new BadRequestException('You are not allowed to change password');
+    return this.userService.changePassword(userPayload, dto);
+  }
+
+  // @Get('my-detail')
+  // @UseGuards(JwtAuthGuard)
+  // @ApiBearerAuth()
+  // findMyDetail(@CurrentUser() userPayload: IJwtPayload,) {
+  //   return this.userService.findOne(+userPayload.id);
+  // }
+
   @Get(':id')
   @Roles([
     RoleEnum.SYSTEM_ADMIN, 
@@ -88,16 +97,5 @@ export class UserController {
   @ApiBearerAuth()
   findOne(@Param('id') id: string) {
     return this.userService.findOne(+id);
-  }
-
-  @Get('my-detail')
-  @Roles([
-    RoleEnum.SYSTEM_ADMIN, 
-    RoleEnum.SUPER_ADMIN, 
-    RoleEnum.USER_SUPER_ADMIN_BANK,
-  ])
-  @ApiBearerAuth()
-  findMyDetail(@CurrentUser() userPayload: IJwtPayload,) {
-    return this.userService.findOne(+userPayload.id);
   }
 }

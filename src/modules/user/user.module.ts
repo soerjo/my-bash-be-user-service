@@ -4,11 +4,11 @@ import { UserController } from './controller/user.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UserEntity } from './entities/user.entity';
 import { UserRepository } from './repositories/user.repository';
-import { BankModule } from '../bank/bank.module';
+// import { BankModule } from '../bank/bank.module';
 
 @Module({
   imports: [
-    BankModule,
+    // BankModule,
     TypeOrmModule.forFeature([UserEntity])
   ],
   controllers: [UserController],

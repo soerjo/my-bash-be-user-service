@@ -12,7 +12,7 @@ import { instanceToPlain } from 'class-transformer';
 import { DataSource, EntityManager } from 'typeorm';
 import { UserEntity } from '../entities/user.entity';
 import { CreateUserBankDto } from '../dto/create-user-bank.dto';
-import { BankService } from '../../../modules/bank/services/bank.service';
+// import { BankService } from '../../../modules/bank/services/bank.service';
 import { sendVerificationEmail } from '../../../utils/email.util';
 
 @Injectable()
@@ -21,7 +21,7 @@ export class UserService implements OnModuleInit  {
   constructor(
     private readonly dataSource: DataSource,
     private readonly usersRepository: UserRepository,
-    private readonly bankService: BankService,
+    // private readonly bankService: BankService,
     private readonly configService: ConfigService,
     
   ) {}
@@ -54,16 +54,6 @@ export class UserService implements OnModuleInit  {
   }
 
   async getByUsernameOrEmail(usernameOrEmail: string, userPayload?: IJwtPayload) {
-    if(userPayload && userPayload.bank_id) {
-      const isBankExist = await this.bankService.findOneById(userPayload.bank_id);
-      if(!isBankExist) throw new BadRequestException('Bank is not found');
-
-      const isUserAlreadyExist = await this.usersRepository.findOneByUsernameOrEmail(usernameOrEmail+ `_${isBankExist.name}`);
-      if(isUserAlreadyExist) return isUserAlreadyExist;
-
-      const isEmailAlreadyExist = await this.usersRepository.findOneByUsernameOrEmail(usernameOrEmail);
-      if(isEmailAlreadyExist) return isEmailAlreadyExist;
-    }
     return this.usersRepository.findOneByUsernameOrEmail(usernameOrEmail);
   }
 
@@ -76,7 +66,7 @@ export class UserService implements OnModuleInit  {
     }
 
     await this.usersRepository.update(user.id, {
-      password: '',
+      password: null,
       temp_password: encryptPassword(dto.temp_password),
       updated_by: userPayload.id,
     })
@@ -135,14 +125,14 @@ export class UserService implements OnModuleInit  {
       const isEmailExist = await this.usersRepository.findOneByUsernameOrEmail(createUserDto.email, manager);
       if(isEmailExist) throw new BadRequestException('Email already exist');
 
-      const isBankExist = await this.bankService.findOneById(userPayload.bank_id, manager);
-      if(!isBankExist) throw new BadRequestException('Bank is not found');
+      // const isBankExist = await this.bankService.findOneById(userPayload.bank_id, manager);
+      // if(!isBankExist) throw new BadRequestException('Bank is not found');
       
       const generateDefaultPassword = Math.random().toString(36).substring(2, 14);
       const user = await this.usersRepository.createUser({
         ...createUserDto,
-        name: createUserDto.username + `_${isBankExist.name}`,
-        username: createUserDto.username + `_${isBankExist.name}`,
+        name: createUserDto.username,
+        username: createUserDto.username,
         is_email_verified: true,
         temp_password: encryptPassword(generateDefaultPassword),
         created_by: userPayload.id,

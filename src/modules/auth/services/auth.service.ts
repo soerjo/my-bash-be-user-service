@@ -13,7 +13,7 @@ import { AUTH_EMAIL_REQUEST } from '../../../common/constant/auth-email-request.
 import { VerifiedEmailDto } from '../dto/verified-email.dto';
 import { DataSource } from 'typeorm';
 import { instanceToPlain } from 'class-transformer';
-import { BankService } from '../../../modules/bank/services/bank.service';
+// import { BankService } from '../../../modules/bank/services/bank.service';
 
 @Injectable()
 export class AuthService {
@@ -22,7 +22,7 @@ export class AuthService {
     private readonly configService: ConfigService,
     private readonly userService: UserService,
     private readonly jwtService: JwtService,
-    private readonly bankService: BankService,
+    // private readonly bankService: BankService,
   ) {}
 
   generateJwt(dto: any) {
@@ -93,44 +93,44 @@ export class AuthService {
     }
   }
 
-  async registerBank(dto: RegisterUserDto) {
-    return this.dataSource.transaction(async (manager) => {
-      const user = await this.userService.createNew({
-        email: dto.email,
-        username: dto.username,
-        name: dto.username,
-        password: dto.password,
-        phone: dto?.phone,
-        role_id: RoleEnum.USER_SUPER_ADMIN_BANK,
-      }, manager);
+  // async registerBank(dto: RegisterUserDto) {
+  //   return this.dataSource.transaction(async (manager) => {
+  //     const user = await this.userService.createNew({
+  //       email: dto.email,
+  //       username: dto.username,
+  //       name: dto.username,
+  //       password: dto.password,
+  //       phone: dto?.phone,
+  //       role_id: RoleEnum.USER_SUPER_ADMIN_BANK,
+  //     }, manager);
       
-      const bank = await this.bankService.createBank({
-        name: dto.username + "_bank",
-        owner_id: user.id,
-        address: dto.address,
-        phone: dto?.phone,
-        province: dto.province,
-        regency: dto.regency,
-        district: dto.district,
-        village: dto.village,
-        postal_code: dto.postal_code,
-      });
+  //     const bank = await this.bankService.createBank({
+  //       name: dto.username + "_bank",
+  //       owner_id: user.id,
+  //       address: dto.address,
+  //       phone: dto?.phone,
+  //       province: dto.province,
+  //       regency: dto.regency,
+  //       district: dto.district,
+  //       village: dto.village,
+  //       postal_code: dto.postal_code,
+  //     });
       
-      await this.userService.updateUser(
-        user.id,
-        {
-          ...user,
-          bank_id: bank.id,
-        },
-        manager,
-      );
+  //     await this.userService.updateUser(
+  //       user.id,
+  //       {
+  //         ...user,
+  //         bank_id: bank.id,
+  //       },
+  //       manager,
+  //     );
       
-      const token = this.jwtService.sign({...user, request: AUTH_EMAIL_REQUEST.VERIFY_EMAIL});
-      await sendVerificationEmail(user.email, token);
-    }).catch((error) => {
-      throw new BadRequestException(error?.message);
-    });
-  }
+  //     const token = this.jwtService.sign({...user, request: AUTH_EMAIL_REQUEST.VERIFY_EMAIL});
+  //     await sendVerificationEmail(user.email, token);
+  //   }).catch((error) => {
+  //     throw new BadRequestException(error?.message);
+  //   });
+  // }
 
   async registerUser(dto: RegisterUserDto) {
     return this.dataSource.transaction(async (manager) => {

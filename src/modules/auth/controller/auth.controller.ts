@@ -38,15 +38,15 @@ export class AuthController {
     return this.authService.verifiedEmail(dto);
   }
 
-  @Post('register-bank')
-  @HttpCode(200)
-  async registerBank(@Body() createAuthDto: RegisterUserDto) {
-    return this.authService.registerBank(createAuthDto);
-  }
+  // @Post('register-bank')
+  // @HttpCode(200)
+  // async registerBank(@Body() createAuthDto: RegisterUserDto) {
+  //   return this.authService.registerBank(createAuthDto);
+  // }
 
-  @Post('register-user')
-  @HttpCode(200)
-  async registerUser(@Body() createAuthDto: RegisterUserDto) {
-    return this.authService.registerUser(createAuthDto);
-  }
+  // @Post('register-user')
+  // @HttpCode(200)
+  // async registerUser(@Body() createAuthDto: RegisterUserDto) {
+  //   return this.authService.registerUser(createAuthDto);
+  // }
 }
