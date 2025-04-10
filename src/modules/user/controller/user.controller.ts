@@ -14,19 +14,22 @@ import { IJwtPayload } from '../../../common/interface/jwt-payload.interface';
 import { ChangePasswordDto } from '../dto/change-password.dto';
 import { CreateUserBankDto } from '../dto/create-user-bank.dto';
 import { JwtOpenAuthGuard } from '../../../common/guard/jwt-open-auth.guard';
+import { InjectRepository } from '@nestjs/typeorm';
+import { RoleEntity } from '../entities/role.entity';
+import { Repository } from 'typeorm';
 
 
 @ApiTags('User')
 @Controller('user')
 export class UserController {
-  constructor(private readonly userService: UserService) {}
+  constructor(
+    private readonly userService: UserService,
+  ) {}
 
   @Post()
   @Roles([    
     RoleEnum.SYSTEM_ADMIN, 
-    RoleEnum.SUPER_ADMIN, 
-    RoleEnum.USER_SUPER_ADMIN_BANK,
-    RoleEnum.USER_ADMIN_BANK, 
+    RoleEnum.ADMIN_BANK,
   ])
   @UseGuards(JwtAuthGuard, RolesGuard)
   @ApiBearerAuth()
@@ -37,9 +40,7 @@ export class UserController {
   @Post('/reset-password')
   @Roles([
     RoleEnum.SYSTEM_ADMIN, 
-    RoleEnum.SUPER_ADMIN, 
-    RoleEnum.USER_SUPER_ADMIN_BANK,
-    RoleEnum.USER_ADMIN_BANK, 
+    RoleEnum.ADMIN_BANK,
   ])
   @UseGuards(JwtAuthGuard, RolesGuard)
   @ApiBearerAuth()
@@ -47,15 +48,10 @@ export class UserController {
     return this.userService.resetPassword(dto, userPayload);
   }
 
-
-
-
   @Get()
   @Roles([
     RoleEnum.SYSTEM_ADMIN, 
-    RoleEnum.SUPER_ADMIN, 
-    RoleEnum.USER_ADMIN_BANK, 
-    RoleEnum.USER_SUPER_ADMIN_BANK,
+    RoleEnum.ADMIN_BANK,
   ])
   @UseGuards(JwtAuthGuard, RolesGuard)
   @ApiBearerAuth()
@@ -80,18 +76,20 @@ export class UserController {
     return this.userService.changePassword(userPayload, dto);
   }
 
-  // @Get('my-detail')
-  // @UseGuards(JwtAuthGuard)
-  // @ApiBearerAuth()
-  // findMyDetail(@CurrentUser() userPayload: IJwtPayload,) {
-  //   return this.userService.findOne(+userPayload.id);
-  // }
-
+  @Get('roles')
+  @Roles([
+    RoleEnum.SYSTEM_ADMIN, 
+    RoleEnum.ADMIN_BANK,
+  ])
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @ApiBearerAuth()
+  getRoles(@CurrentUser() userPayload: IJwtPayload) {
+    return this.userService.getRoles(userPayload);
+  }
   @Get(':id')
   @Roles([
     RoleEnum.SYSTEM_ADMIN, 
-    RoleEnum.SUPER_ADMIN, 
-    RoleEnum.USER_SUPER_ADMIN_BANK,
+    RoleEnum.ADMIN_BANK,
   ])
   @UseGuards(JwtAuthGuard, RolesGuard)
   @ApiBearerAuth()

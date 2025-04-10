@@ -1,5 +1,6 @@
-import { IsNotEmpty, IsString } from "class-validator";
-import { ApiProperty } from "@nestjs/swagger";
+import { IsEnum, IsNotEmpty, IsNumber, IsOptional, IsString } from "class-validator";
+import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
+import { RoleEnum } from "../../../common/constant/role.constant";
 
 export class CreateUserBankDto {
     @IsString()
@@ -12,5 +13,12 @@ export class CreateUserBankDto {
     @ApiProperty()
     email: string;
 
-    created_by: number;
+    @ApiProperty()
+    @IsNumber()
+    bank_id: number;
+
+    @ApiProperty()
+    @IsEnum(RoleEnum)
+    role_id: RoleEnum;
+
 }

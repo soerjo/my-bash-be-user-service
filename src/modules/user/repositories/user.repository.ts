@@ -5,8 +5,7 @@ import { UserEntity } from '../entities/user.entity';
 import { DataSource, EntityManager, Repository } from 'typeorm';
 import { FindUserDto } from '../dto/find-user.dto';
 import { IJwtPayload } from '../../../common/interface/jwt-payload.interface';
-import { RoleEnum } from '../../../common/constant/role.constant';
-import { decrypt, staticDecrypt, staticEncrypt } from 'src/utils/encrypt.util';
+import { decrypt, staticDecrypt, staticEncrypt } from '../../../utils/encrypt.util';
 
 @Injectable()
 export class UserRepository extends Repository<UserEntity> {
@@ -54,8 +53,8 @@ export class UserRepository extends Repository<UserEntity> {
       end as is_reset_password`,
     ])
 
-    if(![RoleEnum.SUPER_ADMIN, RoleEnum.SYSTEM_ADMIN].includes(userPayload.role_id)) {
-      queryBuilder.andWhere('user.bank_id = :bank_id', { bank_id: userPayload.bank_id });
+    if(dto.ids.length) {
+      queryBuilder.andWhere('user.id IN (:...ids)', { ids: dto.ids});
     }
 
     if(dto.username) {

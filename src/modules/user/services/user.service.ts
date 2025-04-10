@@ -9,11 +9,14 @@ import { ResetPasswordDto } from '../dto/reset-password.dto';
 import { IJwtPayload } from '../../../common/interface/jwt-payload.interface';
 import { ChangePasswordDto } from '../dto/change-password.dto';
 import { instanceToPlain } from 'class-transformer';
-import { DataSource, EntityManager } from 'typeorm';
+import { DataSource, EntityManager, MoreThan, MoreThanOrEqual, Repository } from 'typeorm';
 import { UserEntity } from '../entities/user.entity';
 import { CreateUserBankDto } from '../dto/create-user-bank.dto';
 // import { BankService } from '../../../modules/bank/services/bank.service';
 import { sendVerificationEmail } from '../../../utils/email.util';
+import { InjectRepository } from '@nestjs/typeorm';
+import {  } from "typeorm";
+import { RoleEntity } from '../entities/role.entity';
 
 @Injectable()
 export class UserService implements OnModuleInit  {
@@ -21,8 +24,11 @@ export class UserService implements OnModuleInit  {
   constructor(
     private readonly dataSource: DataSource,
     private readonly usersRepository: UserRepository,
-    // private readonly bankService: BankService,
     private readonly configService: ConfigService,
+
+    @InjectRepository(RoleEntity)
+    private roleRepository: Repository<RoleEntity>,
+
     
   ) {}
 
@@ -124,9 +130,6 @@ export class UserService implements OnModuleInit  {
 
       const isEmailExist = await this.usersRepository.findOneByUsernameOrEmail(createUserDto.email, manager);
       if(isEmailExist) throw new BadRequestException('Email already exist');
-
-      // const isBankExist = await this.bankService.findOneById(userPayload.bank_id, manager);
-      // if(!isBankExist) throw new BadRequestException('Bank is not found');
       
       const generateDefaultPassword = Math.random().toString(36).substring(2, 14);
       const user = await this.usersRepository.createUser({
@@ -136,13 +139,17 @@ export class UserService implements OnModuleInit  {
         is_email_verified: true,
         temp_password: encryptPassword(generateDefaultPassword),
         created_by: userPayload.id,
-        bank_id: userPayload.bank_id,
-        role_id: RoleEnum.USER_ADMIN_BANK,
+        bank_id: createUserDto.bank_id,
+        role_id: RoleEnum.ADMIN_BANK,
       }, manager);
       
-      await sendVerificationEmail(user.email, generateDefaultPassword);
+      // await sendVerificationEmail(user.email, generateDefaultPassword);
       
-      return instanceToPlain(user)
+      // return instanceToPlain(user)
+      return {
+        ...user,
+        temp_password: generateDefaultPassword,
+      };
     }).catch((error) => {
       throw new BadRequestException(error?.message);
     });
@@ -165,6 +172,9 @@ export class UserService implements OnModuleInit  {
   async findOne(id: number) {
     const user = await this.usersRepository.findOneById(id);
     return instanceToPlain(user)
+  }
 
+  getRoles(userPayload: IJwtPayload){
+    return this.roleRepository.find({where: {role_id: MoreThanOrEqual(userPayload.role_id)}});
   }
 }

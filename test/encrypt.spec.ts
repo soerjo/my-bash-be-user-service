@@ -1,4 +1,4 @@
-import { encrypt, staticEncrypt } from "src/utils/encrypt.util";
+import { encrypt, staticEncrypt } from "../src/utils/encrypt.util";
 import * as crypto from 'crypto';
 
 describe("encrypt", () => {

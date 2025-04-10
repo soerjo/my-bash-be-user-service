@@ -10,7 +10,6 @@ import { HttpExceptionFilter } from './common/interceptor/http-exception.interce
 // import { addTransactionalDataSource } from 'typeorm-transactional';
 // import { DataSource } from 'typeorm';
 import { JwtModule } from '@nestjs/jwt';
-import { ExampleModule } from './modules/example/example.module';
 import { UserModule } from './modules/user/user.module';
 
 @Module({
@@ -26,7 +25,6 @@ import { UserModule } from './modules/user/user.module';
     }),
     JwtModule.register({ global: true }),
     AuthModule,
-    ExampleModule,
     UserModule,
     // other module...
   ],
