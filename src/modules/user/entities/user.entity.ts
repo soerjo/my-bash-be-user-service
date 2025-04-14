@@ -40,8 +40,11 @@ export class UserEntity extends MainEntityAbstract {
   @Column({ nullable: false })
   role_id: number;
 
-  @Column({ nullable: false, default: 0 })
-  bank_id: number;
+  @Column({ nullable: true })
+  bank_id?: number;
+
+  @Column({ nullable: true })
+  warehouse_id?: number;
 
   @Exclude()
   @Column({ nullable: true })

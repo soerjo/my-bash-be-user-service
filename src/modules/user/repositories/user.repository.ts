@@ -13,11 +13,6 @@ export class UserRepository extends Repository<UserEntity> {
     super(UserEntity, dataSource.createEntityManager());
   }
 
-  // constructor(
-  //   @InjectRepository(UserEntity)
-  //   private usersRepository: Repository<UserEntity>,
-  // ) {}
-
   createUser(dto: CreateUserDto, manager?: EntityManager) {
     const repo = manager ? manager.getRepository(UserEntity) : this;
     const user = repo.create(dto)
@@ -53,7 +48,7 @@ export class UserRepository extends Repository<UserEntity> {
       end as is_reset_password`,
     ])
 
-    if(dto.ids.length) {
+    if(dto.ids?.length) {
       queryBuilder.andWhere('user.id IN (:...ids)', { ids: dto.ids});
     }
 

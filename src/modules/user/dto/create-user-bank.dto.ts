@@ -18,7 +18,11 @@ export class CreateUserBankDto {
     bank_id: number;
 
     @ApiProperty()
+    @IsNumber()
+    warehouse_id: number;
+
+
+    @ApiProperty()
     @IsEnum(RoleEnum)
     role_id: RoleEnum;
-
 }

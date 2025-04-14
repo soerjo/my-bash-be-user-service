@@ -140,6 +140,7 @@ export class UserService implements OnModuleInit  {
         temp_password: encryptPassword(generateDefaultPassword),
         created_by: userPayload.id,
         bank_id: createUserDto.bank_id,
+        warehouse_id: createUserDto.warehouse_id,
         role_id: RoleEnum.ADMIN_BANK,
       }, manager);
       

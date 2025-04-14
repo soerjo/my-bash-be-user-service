@@ -10,5 +10,6 @@ export class CreateUserDto {
     is_email_verified?: boolean;
     created_by?: number;
     bank_id?: number;
+    warehouse_id?: number;
     temp_password?: string;
 }
