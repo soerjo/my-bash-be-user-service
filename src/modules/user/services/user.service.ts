@@ -17,6 +17,7 @@ import { sendVerificationEmail } from '../../../utils/email.util';
 import { InjectRepository } from '@nestjs/typeorm';
 import {  } from "typeorm";
 import { RoleEntity } from '../entities/role.entity';
+import { FailedCreateUser } from '../dto/failed-create-user.dto';
 
 @Injectable()
 export class UserService implements OnModuleInit  {
@@ -133,20 +134,20 @@ export class UserService implements OnModuleInit  {
       
       const generateDefaultPassword = Math.random().toString(36).substring(2, 14);
       const user = await this.usersRepository.createUser({
-        ...createUserDto,
         name: createUserDto.username,
         username: createUserDto.username,
-        is_email_verified: true,
-        temp_password: encryptPassword(generateDefaultPassword),
-        created_by: userPayload.id,
+        email: createUserDto.email,
+        is_email_verified: false,
+        role_id: RoleEnum.ADMIN_BANK,
         bank_id: createUserDto.bank_id,
         warehouse_id: createUserDto.warehouse_id,
-        role_id: RoleEnum.ADMIN_BANK,
+        temp_password: encryptPassword(generateDefaultPassword),
+        created_by: userPayload.id,
+        trx_id: createUserDto.trx_id,
       }, manager);
       
-      // await sendVerificationEmail(user.email, generateDefaultPassword);
+      await sendVerificationEmail(user.email, generateDefaultPassword);
       
-      // return instanceToPlain(user)
       return {
         ...user,
         temp_password: generateDefaultPassword,
@@ -154,6 +155,13 @@ export class UserService implements OnModuleInit  {
     }).catch((error) => {
       throw new BadRequestException(error?.message);
     });
+  }
+
+  async failedCreateUser(trx_id: string) {
+    const user = await this.usersRepository.findOne({where: {trx_id: trx_id}})
+    if(!user) throw new BadRequestException('user trx is not found');
+
+    return this.usersRepository.remove(user);
   }
 
   async updateUser(userId: number, dto: Partial<UserEntity>, manager?: EntityManager) {

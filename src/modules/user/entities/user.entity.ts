@@ -46,6 +46,9 @@ export class UserEntity extends MainEntityAbstract {
   @Column({ nullable: true })
   warehouse_id?: number;
 
+  @Column({ nullable: true })
+  trx_id?: string;
+
   @Exclude()
   @Column({ nullable: true })
   password?: string;

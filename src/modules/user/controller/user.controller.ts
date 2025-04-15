@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Param, Query, UseGuards, BadRequestException } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Query, UseGuards, BadRequestException, Delete } from '@nestjs/common';
 import { UserService } from '../services/user.service';
 import { CreateUserDto } from '../dto/create-user.dto';
 import { UpdateUserDto } from '../dto/update-user.dto';
@@ -17,6 +17,7 @@ import { JwtOpenAuthGuard } from '../../../common/guard/jwt-open-auth.guard';
 import { InjectRepository } from '@nestjs/typeorm';
 import { RoleEntity } from '../entities/role.entity';
 import { Repository } from 'typeorm';
+import { FailedCreateUser } from '../dto/failed-create-user.dto';
 
 
 @ApiTags('User')
@@ -26,16 +27,36 @@ export class UserController {
     private readonly userService: UserService,
   ) {}
 
-  @Post()
+  @Post('customer')
   @Roles([    
     RoleEnum.SYSTEM_ADMIN, 
     RoleEnum.ADMIN_BANK,
   ])
   @UseGuards(JwtAuthGuard, RolesGuard)
   @ApiBearerAuth()
+  createCustomer(@CurrentUser() userPayload: IJwtPayload, @Body() dto: CreateUserBankDto) {
+    return this.userService.createUserBank(dto, userPayload);
+  }
+
+  @Post()
+  @Roles([    
+    RoleEnum.SYSTEM_ADMIN, 
+    // RoleEnum.ADMIN_BANK,
+  ])
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @ApiBearerAuth()
   create(@CurrentUser() userPayload: IJwtPayload, @Body() dto: CreateUserBankDto) {
     return this.userService.createUserBank(dto, userPayload);
   }
+
+  @Delete('failed/:trx_id')
+  @Roles([ RoleEnum.SYSTEM_ADMIN ])
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @ApiBearerAuth()
+  createFailed(@Param('trx_id') trx_id: string) {
+    return this.userService.failedCreateUser(trx_id);
+  }
+
 
   @Post('/reset-password')
   @Roles([

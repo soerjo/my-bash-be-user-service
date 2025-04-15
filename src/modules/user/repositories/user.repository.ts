@@ -13,7 +13,7 @@ export class UserRepository extends Repository<UserEntity> {
     super(UserEntity, dataSource.createEntityManager());
   }
 
-  createUser(dto: CreateUserDto, manager?: EntityManager) {
+  createUser(dto: Partial<UserEntity>, manager?: EntityManager) {
     const repo = manager ? manager.getRepository(UserEntity) : this;
     const user = repo.create(dto)
     return repo.save(user)
