@@ -1,11 +1,10 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
-import { CreateUserDto } from '../dto/create-user.dto';
 import { UpdateUserDto } from '../dto/update-user.dto';
 import { UserEntity } from '../entities/user.entity';
 import { DataSource, EntityManager, Repository } from 'typeorm';
 import { FindUserDto } from '../dto/find-user.dto';
 import { IJwtPayload } from '../../../common/interface/jwt-payload.interface';
-import { decrypt, staticDecrypt, staticEncrypt } from '../../../utils/encrypt.util';
+import { decrypt, staticDecrypt } from '../../../utils/encrypt.util';
 
 @Injectable()
 export class UserRepository extends Repository<UserEntity> {
@@ -45,7 +44,8 @@ export class UserRepository extends Repository<UserEntity> {
       `case 
         when user.temp_password IS NULL OR user.temp_password = '' then false 
         else true 
-      end as is_reset_password`,
+      end as is_temp_password`,
+      'user.is_email_verified as is_email_verified',
     ])
 
     if(dto.ids?.length) {
@@ -80,7 +80,7 @@ export class UserRepository extends Repository<UserEntity> {
 
     const processedData = rawData.map(data => ({
       ...data, 
-      email: data.phone ? staticDecrypt(data.email) : null,
+      email: data.email ? staticDecrypt(data.email) : null,
       phone: data.phone ? decrypt(data.phone) : null,
     }))
     
