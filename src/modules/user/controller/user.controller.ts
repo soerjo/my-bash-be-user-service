@@ -77,6 +77,7 @@ export class UserController {
   @UseGuards(JwtAuthGuard, RolesGuard)
   @ApiBearerAuth()
   changePassword(@CurrentUser() userPayload: IJwtPayload, @Body() dto: ChangePasswordDto) {
+    console.log({userPayload})
     if(!userPayload.is_temp_password) throw new BadRequestException('You are not allowed to change password');
     return this.userService.changePassword(userPayload, dto);
   }
@@ -88,6 +89,23 @@ export class UserController {
   getRoles(@CurrentUser() userPayload: IJwtPayload) {
     return this.userService.getRoles(userPayload);
   }
+
+  @Get('/resend-verified-email/:id')
+  @Roles([ RoleEnum.SYSTEM_ADMIN,  RoleEnum.ADMIN_BANK ])
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @ApiBearerAuth()
+  resendVerfiedEmail(@Param('id') id: string) {
+    return this.userService.resendVerifiedEmail(+id);
+  }
+
+  @Get('/resend-forgot-password-email/:id')
+  @Roles([ RoleEnum.SYSTEM_ADMIN,  RoleEnum.ADMIN_BANK ])
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @ApiBearerAuth()
+  resendForgotPaswordEmail(@Param('id') id: string) {
+    return this.userService.resendVerifiedEmail(+id);
+  }
+
 
   @Get(':id')
   @Roles([ RoleEnum.SYSTEM_ADMIN,  RoleEnum.ADMIN_BANK ])

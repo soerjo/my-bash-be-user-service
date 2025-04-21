@@ -5,11 +5,13 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { UserEntity } from './entities/user.entity';
 import { UserRepository } from './repositories/user.repository';
 import { RoleEntity } from './entities/role.entity';
+import { JwtModule } from '@nestjs/jwt';
 // import { BankModule } from '../bank/bank.module';
 
 @Module({
   imports: [
     // BankModule,
+    JwtModule,
     TypeOrmModule.forFeature([UserEntity, RoleEntity])
   ],
   controllers: [UserController],

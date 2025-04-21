@@ -9,15 +9,14 @@ import { ResetPasswordDto } from '../dto/reset-password.dto';
 import { IJwtPayload } from '../../../common/interface/jwt-payload.interface';
 import { ChangePasswordDto } from '../dto/change-password.dto';
 import { instanceToPlain } from 'class-transformer';
-import { DataSource, EntityManager, MoreThan, MoreThanOrEqual, Repository } from 'typeorm';
+import { DataSource, EntityManager, MoreThanOrEqual, Repository } from 'typeorm';
 import { UserEntity } from '../entities/user.entity';
 import { CreateUserBankDto } from '../dto/create-user-bank.dto';
-// import { BankService } from '../../../modules/bank/services/bank.service';
 import { sendVerificationEmail } from '../../../utils/email.util';
 import { InjectRepository } from '@nestjs/typeorm';
-import {  } from "typeorm";
 import { RoleEntity } from '../entities/role.entity';
-import { FailedCreateUser } from '../dto/failed-create-user.dto';
+import { AUTH_EMAIL_REQUEST } from 'src/common/constant/auth-email-request.constant';
+import { JwtService } from '@nestjs/jwt';
 
 @Injectable()
 export class UserService implements OnModuleInit  {
@@ -26,6 +25,7 @@ export class UserService implements OnModuleInit  {
     private readonly dataSource: DataSource,
     private readonly usersRepository: UserRepository,
     private readonly configService: ConfigService,
+    private readonly jwtService: JwtService,
 
     @InjectRepository(RoleEntity)
     private roleRepository: Repository<RoleEntity>,
@@ -185,5 +185,53 @@ export class UserService implements OnModuleInit  {
 
   getRoles(userPayload: IJwtPayload){
     return this.roleRepository.find({where: {role_id: MoreThanOrEqual(userPayload.role_id)}});
+  }
+
+  async resendForgotPasswordEmail(id: number) {
+    const user = await this.usersRepository.findOneById(id);
+    if(!user) throw new BadRequestException('User not found');
+
+    const payload = {
+      id: user.id,
+      name: user.name,
+      username: user.username,
+      email: user.email,
+      request: AUTH_EMAIL_REQUEST.FORGOT_PASSWORD,
+    }
+    const token = this.jwtService.sign(
+      payload, 
+      {
+        secret: this.configService.get<string>('SECRET_TOKEN'), 
+        expiresIn: '2h', 
+        algorithm: 'HS256',
+      },
+    );
+
+    await sendVerificationEmail(user.email, token);
+  }
+
+  async resendVerifiedEmail(id: number) {
+    const user = await this.usersRepository.findOneById(id);
+    if(!user) throw new BadRequestException('User not found');
+
+    const payload = {
+      id: user.id,
+      name: user.name,
+      username: user.username,
+      email: user.email,
+      request: AUTH_EMAIL_REQUEST.VERIFY_EMAIL,
+    }
+
+    const token = this.jwtService.sign(
+      payload, 
+      {
+        secret: this.configService.get<string>('SECRET_TOKEN'), 
+        expiresIn: '2h', 
+        algorithm: 'HS256',
+      },
+    );
+
+    await sendVerificationEmail(user.email, token);
+
   }
 }

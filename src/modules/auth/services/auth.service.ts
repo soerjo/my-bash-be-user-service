@@ -12,8 +12,6 @@ import { RegisterUserDto } from '../dto/register-user.dto';
 import { AUTH_EMAIL_REQUEST } from '../../../common/constant/auth-email-request.constant';
 import { VerifiedEmailDto } from '../dto/verified-email.dto';
 import { DataSource } from 'typeorm';
-import { instanceToPlain } from 'class-transformer';
-// import { BankService } from '../../../modules/bank/services/bank.service';
 
 @Injectable()
 export class AuthService {
@@ -22,7 +20,6 @@ export class AuthService {
     private readonly configService: ConfigService,
     private readonly userService: UserService,
     private readonly jwtService: JwtService,
-    // private readonly bankService: BankService,
   ) {}
 
   generateJwt(dto: any) {
@@ -33,8 +30,9 @@ export class AuthService {
       email: dto.email,
       role_id: dto.role_id,
       bank_id: dto.bank_id,
+      warehouse_id: dto.warehouse_id,
       is_temp_password: dto.temp_password ? true : false,
-      ...dto,
+      is_email_verified: dto.is_email_verified,
     };
     const jwt = this.jwtService.sign(payload);
 
@@ -62,20 +60,36 @@ export class AuthService {
     )
       throw new BadRequestException('username or email or password is not valid');
 
-    return this.generateJwt(instanceToPlain(user));
+    return this.generateJwt(user);
   }
 
   async requestForgotPassword(userEmail: string) {
     const user = await this.userService.getByUsernameOrEmail(userEmail);
     if (!user) return;
 
-    const token = this.generateJwt({...user, request: AUTH_EMAIL_REQUEST.FORGOT_PASSWORD});
-    await sendResetPasswordEmail(userEmail, token.jwt);
+    const payload = {
+      id: user.id,
+      name: user.name,
+      username: user.username,
+      email: user.email,
+      request: AUTH_EMAIL_REQUEST.FORGOT_PASSWORD,
+    };
+
+    const token = this.jwtService.sign(
+      payload, 
+      {
+        secret: this.configService.get<string>('PUBLIC_KEY'), 
+        expiresIn: '2h', 
+        algorithm: 'HS256',
+      },
+    );
+
+    await sendResetPasswordEmail(userEmail, token);
   }
 
   async changePasswordByEmail(dto: ChangePasswordTokenDto){
     try {
-      const payload = await this.decodeJwt(dto.token_from_email);
+      const payload = await this.jwtService.verifyAsync(dto.token_from_email, { secret: this.configService.get<string>('PUBLIC_KEY') });
       if(payload?.request !== AUTH_EMAIL_REQUEST.FORGOT_PASSWORD) throw new BadRequestException('Token is not valid');
       await this.userService.changePassword(payload, { new_password: dto.new_password });
     } catch (error) {
@@ -85,52 +99,13 @@ export class AuthService {
 
   async verifiedEmail(dto: VerifiedEmailDto){
     try {
-      const payload = await this.decodeJwt(dto.token_from_email);
+      const payload = await this.jwtService.verifyAsync(dto.token_from_email, { secret: this.configService.get<string>('PUBLIC_KEY') });
       if(payload?.request !== AUTH_EMAIL_REQUEST.VERIFY_EMAIL) throw new BadRequestException('Token is not valid');
       await this.userService.verifiedEmail(payload);
     } catch (error) {
       throw new BadRequestException('Token is not valid');
     }
   }
-
-  // async registerBank(dto: RegisterUserDto) {
-  //   return this.dataSource.transaction(async (manager) => {
-  //     const user = await this.userService.createNew({
-  //       email: dto.email,
-  //       username: dto.username,
-  //       name: dto.username,
-  //       password: dto.password,
-  //       phone: dto?.phone,
-  //       role_id: RoleEnum.USER_SUPER_ADMIN_BANK,
-  //     }, manager);
-      
-  //     const bank = await this.bankService.createBank({
-  //       name: dto.username + "_bank",
-  //       owner_id: user.id,
-  //       address: dto.address,
-  //       phone: dto?.phone,
-  //       province: dto.province,
-  //       regency: dto.regency,
-  //       district: dto.district,
-  //       village: dto.village,
-  //       postal_code: dto.postal_code,
-  //     });
-      
-  //     await this.userService.updateUser(
-  //       user.id,
-  //       {
-  //         ...user,
-  //         bank_id: bank.id,
-  //       },
-  //       manager,
-  //     );
-      
-  //     const token = this.jwtService.sign({...user, request: AUTH_EMAIL_REQUEST.VERIFY_EMAIL});
-  //     await sendVerificationEmail(user.email, token);
-  //   }).catch((error) => {
-  //     throw new BadRequestException(error?.message);
-  //   });
-  // }
 
   async registerUser(dto: RegisterUserDto) {
     return this.dataSource.transaction(async (manager) => {
