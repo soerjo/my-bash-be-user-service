@@ -94,7 +94,11 @@ export class EmailService {
       to: dto.userEmail,
       subject: dto.subject,
       html: dto.emailTemplate,
-      attachments: dto.attachments
+      attachments: dto.attachments.map((attachment) => ({
+        filename: attachment.filename,
+        path: __dirname + attachment.path,
+        cid: attachment.cid,
+      })),
     });
   
     console.log('Email sent!');
