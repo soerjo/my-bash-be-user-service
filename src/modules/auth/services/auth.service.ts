@@ -6,12 +6,12 @@ import { UserService } from '../../user/services/user.service';
 import { CreateAuthDto } from '../dto/create-auth.dto';
 import { validatePassword } from '../../../utils/hashing.util';
 import { ChangePasswordTokenDto } from '../dto/change-password.dto';
-import { sendResetPasswordEmail, sendVerificationEmail } from '../../../utils/email.util';
 import { RoleEnum } from '../../../common/constant/role.constant';
 import { RegisterUserDto } from '../dto/register-user.dto';
 import { AUTH_EMAIL_REQUEST } from '../../../common/constant/auth-email-request.constant';
 import { VerifiedEmailDto } from '../dto/verified-email.dto';
 import { DataSource } from 'typeorm';
+import { EmailService } from '../../../modules/email/services/email.service';
 
 @Injectable()
 export class AuthService {
@@ -20,6 +20,7 @@ export class AuthService {
     private readonly configService: ConfigService,
     private readonly userService: UserService,
     private readonly jwtService: JwtService,
+    private readonly emailService: EmailService,
   ) {}
 
   generateJwt(dto: any) {
@@ -84,7 +85,7 @@ export class AuthService {
       },
     );
 
-    await sendResetPasswordEmail(userEmail, token);
+    await this.emailService.sendEmail("email_request_change_password", {...payload, token})
   }
 
   async changePasswordByEmail(dto: ChangePasswordTokenDto){
@@ -119,7 +120,7 @@ export class AuthService {
       }, manager);
 
       const token = this.jwtService.sign({...user, request: AUTH_EMAIL_REQUEST.VERIFY_EMAIL});
-      await sendVerificationEmail(user.email, token);
+      // await sendVerificationEmail(user.email, token);
     }).catch((error) => {
       throw new BadRequestException(error?.message);
     });
