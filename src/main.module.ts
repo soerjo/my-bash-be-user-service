@@ -11,6 +11,8 @@ import { HttpExceptionFilter } from './common/interceptor/http-exception.interce
 // import { DataSource } from 'typeorm';
 import { JwtModule } from '@nestjs/jwt';
 import { UserModule } from './modules/user/user.module';
+import { EmailModule } from './modules/email/email.module';
+import { NotificationModule } from './modules/notification/notification.module';
 
 @Module({
   imports: [
@@ -26,6 +28,8 @@ import { UserModule } from './modules/user/user.module';
     JwtModule.register({ global: true }),
     AuthModule,
     UserModule,
+    EmailModule,
+    NotificationModule,
     // other module...
   ],
   providers: [

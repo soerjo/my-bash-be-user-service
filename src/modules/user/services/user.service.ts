@@ -15,8 +15,9 @@ import { CreateUserBankDto } from '../dto/create-user-bank.dto';
 import { sendVerificationEmail } from '../../../utils/email.util';
 import { InjectRepository } from '@nestjs/typeorm';
 import { RoleEntity } from '../entities/role.entity';
-import { AUTH_EMAIL_REQUEST } from 'src/common/constant/auth-email-request.constant';
+import { AUTH_EMAIL_REQUEST } from '../../../common/constant/auth-email-request.constant';
 import { JwtService } from '@nestjs/jwt';
+import { EmailService } from '../../../modules/email/services/email.service';
 
 @Injectable()
 export class UserService implements OnModuleInit  {
@@ -26,6 +27,7 @@ export class UserService implements OnModuleInit  {
     private readonly usersRepository: UserRepository,
     private readonly configService: ConfigService,
     private readonly jwtService: JwtService,
+    private readonly emailService: EmailService,
 
     @InjectRepository(RoleEntity)
     private roleRepository: Repository<RoleEntity>,
@@ -139,8 +141,8 @@ export class UserService implements OnModuleInit  {
         email: createUserDto.email,
         is_email_verified: false,
         role_id: RoleEnum.ADMIN_BANK,
-        bank_id: createUserDto.bank_id,
-        warehouse_id: createUserDto.warehouse_id,
+        bank_id: createUserDto.bank_id ?? userPayload.bank_id,
+        warehouse_id: createUserDto.warehouse_id ?? userPayload.warehouse_id,
         temp_password: encryptPassword(generateDefaultPassword),
         created_by: userPayload.id,
         trx_id: createUserDto.trx_id,
@@ -220,7 +222,7 @@ export class UserService implements OnModuleInit  {
       username: user.username,
       email: user.email,
       request: AUTH_EMAIL_REQUEST.VERIFY_EMAIL,
-    }
+    } as Record<string, any>;
 
     const token = this.jwtService.sign(
       payload, 
@@ -231,7 +233,7 @@ export class UserService implements OnModuleInit  {
       },
     );
 
-    await sendVerificationEmail(user.email, token);
+    await this.emailService.sendEmail('email_verification', {...payload, token});
 
   }
 }

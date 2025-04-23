@@ -1,4 +1,4 @@
-import { encryptPassword } from 'src/utils/hashing.util';
+import { encryptPassword } from '../src/utils/hashing.util';
 import { getWeeksInMonth } from '../src/utils/week-in-month.utils';
 import {verify} from 'jsonwebtoken'
 

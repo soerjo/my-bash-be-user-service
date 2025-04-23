@@ -13,20 +13,24 @@ export class CreateUserBankDto {
     @ApiProperty()
     email: string;
 
-    @ApiProperty()
+    @ApiPropertyOptional()
+    @IsOptional()
     @IsNumber()
-    bank_id: number;
-
-    @ApiProperty()
-    @IsNumber()
-    warehouse_id: number;
-
-    @ApiProperty()
-    @IsEnum(RoleEnum)
-    role_id: RoleEnum;
+    bank_id?: number;
 
     @ApiPropertyOptional()
+    @IsOptional()
+    @IsNumber()
+    warehouse_id?: number;
+
+    @ApiPropertyOptional()
+    @IsOptional()
+    @IsEnum(RoleEnum)
+    role_id?: RoleEnum;
+
+    @ApiPropertyOptional()
+    @IsOptional()
     @IsString()
-    trx_id: string;
+    trx_id?: string;
 
 }
