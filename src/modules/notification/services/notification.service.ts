@@ -1,10 +1,9 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { CreateNotificationDto } from '../dto/create-notification.dto';
-import { UpdateNotificationDto } from '../dto/update-notification.dto';
 import { NotificationRepository } from '../repositories/notification.repository';
 import { FindNotificationDto } from '../dto/find-notification.dto';
 import { NotificationLogRepository } from '../repositories/notification-log.repository';
-import { IJwtPayload } from 'src/common/interface/jwt-payload.interface';
+import { IJwtPayload } from '../../../common/interface/jwt-payload.interface';
 
 @Injectable()
 export class NotificationService {
