@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { EmailRepository } from '../repositories/email.repository';
 import { IJwtPayload } from '../../../common/interface/jwt-payload.interface';
 import { ConfigService } from '@nestjs/config';
@@ -8,12 +8,16 @@ import { EmailAttachmentRepository } from '../repositories/email-attachment.repo
 import { createTransport } from 'nodemailer';
 import { SendEmailDto } from '../dto/send-email.dto';
 import { join } from 'path';
+import { EmailLogRepository } from '../repositories/email-log.repository';
+import { CreateEmailLogDto } from '../dto/create-email-log.dto';
 
 @Injectable()
 export class EmailService {
+  private readonly logging: Logger = new Logger(EmailService.name);
   constructor(
     private readonly emailRepository: EmailRepository,
     private readonly emailAttachmentRepository: EmailAttachmentRepository,
+    private readonly emailLogRepository: EmailLogRepository,
     private readonly configService: ConfigService,
   ) {}
 
@@ -90,7 +94,7 @@ export class EmailService {
       },
     });
   
-    await transporter.sendMail({
+    const payload = {
       from: this.configService.get<string>("EMAIL_FROM"),
       to: dto.userEmail,
       subject: dto.subject,
@@ -100,9 +104,15 @@ export class EmailService {
         path: join(process.cwd(), 'public', attachment.path),
         cid: attachment.cid,
       })),
-    });
-  
-    console.log('Email sent!');
+    }
+    await transporter.sendMail(payload);
+    this.logging.log(`Email sent to ${dto.userEmail} with subject "${dto.subject}"`);
+
+    await this.createEmailLog({
+      email_template_name: dto.subject,
+      subject: dto.subject,
+      to: dto.userEmail,
+    }, payload);
   };
 
   async getAllEmailTemplate() {
@@ -115,8 +125,19 @@ export class EmailService {
   async getAllEmailAttachment() {
     return this.emailAttachmentRepository.find({
       select: ['id', 'filename', 'path', 'cid'],
-      // relations: ['attachments'],
     });
+  }
+
+  async createEmailLog(dto: CreateEmailLogDto, payload: Record<string, any>) {
+    const createEmailLog = this.emailLogRepository.create({
+      email_template_name: dto.email_template_name,
+      subject: dto.subject,
+      to: dto.to,
+      payload: payload,
+    });
+
+    await this.emailLogRepository.save(createEmailLog);
+
   }
 
 }

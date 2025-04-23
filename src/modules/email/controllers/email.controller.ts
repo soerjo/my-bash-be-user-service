@@ -8,6 +8,7 @@ import { RolesGuard } from "../../../common/guard/role.guard";
 import { CurrentUser } from "../../../common/decorator/jwt-payload.decorator";
 import { IJwtPayload } from "../../../common/interface/jwt-payload.interface";
 import { CreateEmailDto } from "../dto/create-email.dto";
+import { SendEmailTemplateDto } from "../dto/send-emal-template.dto";
 
 
 @ApiTags('Email')
@@ -21,15 +22,23 @@ export class EmailController {
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles([ RoleEnum.SYSTEM_ADMIN ])
   @ApiBearerAuth()
-  createCustomer(@CurrentUser() userPayload: IJwtPayload, @Body() dto: CreateEmailDto) {
+  createEmailTemplate(@CurrentUser() userPayload: IJwtPayload, @Body() dto: CreateEmailDto) {
     return this.emailService.createEmail(dto, userPayload);
+  }
+
+  @Post('send')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles([ RoleEnum.SYSTEM_ADMIN, RoleEnum.ADMIN_BANK ])
+  @ApiBearerAuth()
+  sendEmailTemplate(@CurrentUser() userPayload: IJwtPayload, @Body() dto: SendEmailTemplateDto) {
+    return this.emailService.sendEmail(dto.emailTemplate, {...userPayload, ...dto?.payload});
   }
 
   @Patch(":id")
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles([ RoleEnum.SYSTEM_ADMIN ])
   @ApiBearerAuth()
-  updateCustomer(@Param("id") id: string, @CurrentUser() userPayload: IJwtPayload, @Body() dto: CreateEmailDto) {
+  updateEmailTemplate(@Param("id") id: string, @CurrentUser() userPayload: IJwtPayload, @Body() dto: CreateEmailDto) {
     return this.emailService.updateEmail(+id, dto, userPayload);
   }
 

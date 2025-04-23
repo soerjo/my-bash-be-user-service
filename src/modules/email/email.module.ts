@@ -3,6 +3,7 @@ import { EmailService } from './services/email.service';
 import { EmailRepository } from './repositories/email.repository';
 import { EmailAttachmentRepository } from './repositories/email-attachment.repository';
 import { EmailController } from './controllers/email.controller';
+import { EmailLogRepository } from './repositories/email-log.repository';
 
 @Module({
   controllers: [EmailController],
@@ -10,6 +11,7 @@ import { EmailController } from './controllers/email.controller';
     EmailService, 
     EmailRepository,
     EmailAttachmentRepository,
+    EmailLogRepository,
   ],
   exports: [EmailService],
 })
