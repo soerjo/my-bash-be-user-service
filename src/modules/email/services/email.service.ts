@@ -7,6 +7,7 @@ import { CreateEmailDto } from '../dto/create-email.dto';
 import { EmailAttachmentRepository } from '../repositories/email-attachment.repository';
 import { createTransport } from 'nodemailer';
 import { SendEmailDto } from '../dto/send-email.dto';
+import { join } from 'path';
 
 @Injectable()
 export class EmailService {
@@ -96,7 +97,7 @@ export class EmailService {
       html: dto.emailTemplate,
       attachments: dto.attachments.map((attachment) => ({
         filename: attachment.filename,
-        path: __dirname + attachment.path,
+        path: join(process.cwd(), 'public', attachment.path),
         cid: attachment.cid,
       })),
     });
